@@ -401,6 +401,14 @@ input[type="checkbox"]:checked {
   font-weight: 700;
 }
 
+.calendar-day.today {
+  border-color: var(--secondary);
+  color: var(--text-main);
+  box-shadow: inset 0 0 0 2px var(--secondary), 0 0 15px rgba(14, 165, 233, 0.4);
+  font-weight: 700;
+  background: rgba(14, 165, 233, 0.1);
+}
+
 .calendar-day.active {
   background: var(--primary);
   color: white;
@@ -444,15 +452,15 @@ input[type="checkbox"]:checked {
 }
 
 .task-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--secondary);
-  border-radius: 50%;
   position: absolute;
-  bottom: 4px;
+  bottom: -2px;
   left: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 0 5px var(--secondary);
+  color: #fbbf24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.6));
 }
 
 .task-date-badge {
@@ -638,9 +646,32 @@ ul {
     margin: 0 !important;
   }
   
+  .calendar-grid {
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  .calendar-grid::-webkit-scrollbar {
+    height: 4px;
+  }
+  .calendar-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+  
   .calendar-day {
-    padding: 8px 4px;
-    font-size: 13px;
+    padding: 8px 2px;
+    font-size: 12px;
+    min-width: 36px;
+  }
+
+  .calendar-day.has-holiday {
+    min-height: 50px;
+  }
+  
+  .holiday-name {
+    display: none;
   }
   
   .task {

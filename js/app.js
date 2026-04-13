@@ -85,7 +85,10 @@ function renderTasks() {
     li.innerHTML = `
       <div class="task-left">
         <input type="checkbox" ${task.completed ? "checked" : ""} title="Mark as complete">
-        <span class="task-text" style="display:flex;align-items:center;">${task.text} ${priorityBadge}</span>
+        <span class="task-text" style="display:flex;align-items:center;">
+          ${task.completed ? '<span class="material-symbols-rounded" style="color:#10b981;font-size:20px;margin-right:8px;filter:drop-shadow(0 0 5px rgba(16,185,129,0.4));">check_circle</span>' : ''}
+          ${task.text} ${priorityBadge}
+        </span>
       </div>
       <div style="display:flex;align-items:center;gap:12px;">
         ${dateBadge}
@@ -135,6 +138,7 @@ function renderCalendar() {
 
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayDateObj = new Date();
 
   // Day headers
   const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -165,14 +169,18 @@ function renderCalendar() {
     if (new Date(year, month, i).getDay() === 0) {
       dayDiv.classList.add("sunday");
     }
+    if (year === todayDateObj.getFullYear() && month === todayDateObj.getMonth() && i === todayDateObj.getDate()) {
+      dayDiv.classList.add("today");
+    }
     dayDiv.textContent = i;
 
-    // Dot if tasks exist on this date
+    // Bulb if tasks exist on this date
     const tasksOnDate = tasks.filter(t => t.date === dateStr);
     if (tasksOnDate.length > 0) {
       dayDiv.classList.add("has-tasks");
       const dot = document.createElement("div");
       dot.className = "task-dot";
+      dot.innerHTML = `<span class="material-symbols-rounded" style="font-size:14px;">lightbulb</span>`;
       dayDiv.appendChild(dot);
     }
 
@@ -201,7 +209,25 @@ function renderCalendar() {
       if(holiday) {
         showToast(`${holiday.symbol} ${holiday.name} (${holiday.type})`);
       }
+      
+      // Display current tasks for this date when clicked
+      const tasksOnDate = tasks.filter(t => t.date === dateStr);
+      if (tasksOnDate.length > 0) {
+        showToast(`📝 ${tasksOnDate.map(t => t.text).join(" • ")}`);
+      }
+
       selectedDateFilter = selectedDateFilter === dateStr ? null : dateStr;
+      
+      // Auto-prefill the add form due date based on the calendar selection
+      if (selectedDateFilter) {
+        if(dueDateInput) dueDateInput.value = selectedDateFilter;
+        if(taskInput) {
+          taskInput.focus(); // Immediately let user mention his task
+        }
+      } else {
+        if(dueDateInput) dueDateInput.value = "";
+      }
+
       renderCalendar();
       renderTasks();
       updateFilterChip();
