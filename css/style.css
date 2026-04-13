@@ -396,6 +396,11 @@ input[type="checkbox"]:checked {
   transform: scale(1.05);
 }
 
+.calendar-day.sunday {
+  color: var(--danger);
+  font-weight: 700;
+}
+
 .calendar-day.active {
   background: var(--primary);
   color: white;

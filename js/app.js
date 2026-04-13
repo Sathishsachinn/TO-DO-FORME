@@ -144,7 +144,7 @@ function renderCalendar() {
     headerDiv.style.fontWeight = "600";
     headerDiv.style.textAlign = "center";
     headerDiv.style.paddingBottom = "8px";
-    headerDiv.style.color = "var(--text-muted)";
+    headerDiv.style.color = day === 'Sun' ? "var(--danger)" : "var(--text-muted)";
     headerDiv.style.fontSize = "12px";
     headerDiv.style.textTransform = "uppercase";
     headerDiv.style.letterSpacing = "0.5px";
@@ -162,6 +162,9 @@ function renderCalendar() {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
     const dayDiv = document.createElement("div");
     dayDiv.className = "calendar-day";
+    if (new Date(year, month, i).getDay() === 0) {
+      dayDiv.classList.add("sunday");
+    }
     dayDiv.textContent = i;
 
     // Dot if tasks exist on this date
