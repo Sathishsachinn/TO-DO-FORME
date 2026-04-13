@@ -79,72 +79,7 @@
       </div>
     </section>
 
-    <!-- Privacy panel: hidden by default until unlocked. -->
-    <section class="card privacy-panel" id="privacyPanel">
-      <div class="panel-header">
-        <h2>Private Tasks</h2>
-        <div>
-          <button id="privacyToggleBtn" class="btn small secondary">Unlock</button>
-          <button id="setPrivacyPwdBtn" class="btn small light">Set password</button>
-        </div>
-      </div>
 
-      <div id="privateLockedNotice" class="muted small" style="margin:10px 0">Private tasks are locked. Click "Unlock"
-        and enter your password to view them.</div>
-      <ul id="privateList" class="task-list" aria-live="polite" style="display:none"></ul>
-    </section>
-
-    <!-- Privacy Password Modal -->
-    <div id="privacyModal" class="modal" style="display:none;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Privacy — Enter Password</h3>
-          <button id="privacyModalClose" class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body" style="padding:16px;">
-          <div id="privacyPromptArea">
-            <label class="muted small">Enter privacy password to unlock private tasks</label>
-            <input id="privacyPwdInput" type="password" placeholder="Password"
-              style="width:100%;padding:8px;margin-top:8px;border-radius:6px;border:1px solid rgba(15,23,36,0.06);" />
-            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;">
-              <button id="privacyCancelBtn" class="btn small light">Cancel</button>
-              <button id="privacyUnlockBtn" class="btn small">Unlock</button>
-            </div>
-            <div
-              style="margin-top:10px;text-align:right;display:flex;gap:8px;justify-content:flex-end;align-items:center;">
-              <!-- Reset placed to the left of Change; styled as plain text button via .text-btn -->
-              <button id="privacyResetBtn" class="btn small text-btn" style="display:inline-block;">Reset
-                password</button>
-              <button id="privacyChangeToggle" class="btn small light" style="display:inline-block;">Change
-                password</button>
-            </div>
-          </div>
-
-          <div id="privacyChangeArea" style="display:none;margin-top:12px;">
-            <label class="muted small">Change privacy password (requires current password)</label>
-            <input id="privacyCurrentInput" type="password" placeholder="Current password"
-              style="width:100%;padding:8px;margin-top:8px;border-radius:6px;border:1px solid rgba(15,23,36,0.06);" />
-            <input id="privacyNewInput" type="password" placeholder="New password"
-              style="width:100%;padding:8px;margin-top:8px;border-radius:6px;border:1px solid rgba(15,23,36,0.06);" />
-            <input id="privacyConfirmNewInput" type="password" placeholder="Confirm new password"
-              style="width:100%;padding:8px;margin-top:8px;border-radius:6px;border:1px solid rgba(15,23,36,0.06);" />
-            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;">
-              <button id="privacyChangeConfirmBtn" class="btn small">Change</button>
-            </div>
-          </div>
-          <!-- Reset confirmation area (choose to move or delete private tasks) -->
-          <div id="privacyResetArea" style="display:none;margin-top:12px;">
-            <div class="muted small">Resetting the privacy password will remove password protection. Choose to move
-              private tasks to public or permanently delete them.</div>
-            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
-              <button id="privacyResetCancel" class="btn small light">Cancel</button>
-              <button id="privacyResetMove" class="btn small">Move to public</button>
-              <button id="privacyResetDelete" class="btn small danger">Delete private</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
 
   </main>
