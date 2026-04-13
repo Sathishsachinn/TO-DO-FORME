@@ -75,7 +75,17 @@
         </div>
       </div>
       <div id="calendarGrid" class="calendar-grid" aria-label="Calendar"></div>
-      <div class="muted small" id="calendarHint" style="margin-top:8px;">Click a date to filter tasks due on that day.
+      
+      <!-- Explicit Range Selection -->
+      <div style="margin-top:16px;display:flex;gap:8px;align-items:center;padding:12px;background:rgba(255,255,255,0.02);border-radius:var(--radius-sm);border:1px solid var(--glass-border);">
+          <span class="muted small strong">Select:</span>
+          <input id="rangeFromInput" type="date" title="From date" style="padding:6px 10px !important;" />
+          <span class="muted small">to</span>
+          <input id="rangeToInput" type="date" title="To date" style="padding:6px 10px !important;" />
+          <button id="applyRangeBtn" class="btn small secondary" type="button">Apply Range</button>
+      </div>
+
+      <div class="muted small" id="calendarHint" style="margin-top:8px;">Click dates, or hold Shift to select a multi-day range for your tasks.
       </div>
     </section>
 

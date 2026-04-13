@@ -39,17 +39,22 @@ let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 // Calendar state
 let currentMonthDate = new Date();
-let selectedDateFilter = null;
+let selectedDates = [];
+let lastSelectedDate = null;
 
 function saveTasks() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
 function updateFilterChip() {
-  if (selectedDateFilter) {
+  if (selectedDates.length > 0) {
     dateFilterChip.style.display = "inline-flex";
     dateFilterChip.style.alignItems = "center";
-    dateFilterText.textContent = `Due: ${selectedDateFilter}`;
+    if (selectedDates.length === 1) {
+      dateFilterText.textContent = `Due: ${selectedDates[0]}`;
+    } else {
+      dateFilterText.textContent = `Due: ${selectedDates.length} selected days`;
+    }
   } else {
     dateFilterChip.style.display = "none";
   }
@@ -60,8 +65,8 @@ function renderTasks() {
 
   let visibleTasks = tasks;
   
-  if (selectedDateFilter) {
-    visibleTasks = tasks.filter(t => t.date === selectedDateFilter);
+  if (selectedDates.length > 0) {
+    visibleTasks = tasks.filter(t => selectedDates.includes(t.date));
   }
 
   visibleTasks.forEach((task) => {
@@ -201,31 +206,54 @@ function renderCalendar() {
       dayDiv.appendChild(nameSpan);
     }
 
-    if (selectedDateFilter === dateStr) {
+    if (selectedDates.includes(dateStr)) {
       dayDiv.classList.add("active");
     }
 
-    dayDiv.addEventListener("click", () => {
+    dayDiv.addEventListener("click", (e) => {
       if(holiday) {
         showToast(`${holiday.symbol} ${holiday.name} (${holiday.type})`);
       }
       
-      // Display current tasks for this date when clicked
       const tasksOnDate = tasks.filter(t => t.date === dateStr);
       if (tasksOnDate.length > 0) {
         showToast(`📝 ${tasksOnDate.map(t => t.text).join(" • ")}`);
       }
 
-      selectedDateFilter = selectedDateFilter === dateStr ? null : dateStr;
-      
-      // Auto-prefill the add form due date based on the calendar selection
-      if (selectedDateFilter) {
-        if(dueDateInput) dueDateInput.value = selectedDateFilter;
-        if(taskInput) {
-          taskInput.focus(); // Immediately let user mention his task
+      if (e.shiftKey && lastSelectedDate) {
+        const start = new Date(lastSelectedDate);
+        const end = new Date(dateStr);
+        const rangeStart = start < end ? start : end;
+        const rangeEnd = start < end ? end : start;
+        
+        let curr = new Date(rangeStart);
+        while (curr <= rangeEnd) {
+          const y = curr.getFullYear();
+          const m = String(curr.getMonth() + 1).padStart(2, '0');
+          const d = String(curr.getDate()).padStart(2, '0');
+          const dStr = `${y}-${m}-${d}`;
+          if (!selectedDates.includes(dStr)) {
+            selectedDates.push(dStr);
+          }
+          curr.setDate(curr.getDate() + 1);
         }
       } else {
+        const index = selectedDates.indexOf(dateStr);
+        if (index > -1) {
+          selectedDates.splice(index, 1);
+        } else {
+          selectedDates.push(dateStr);
+        }
+      }
+      lastSelectedDate = dateStr;
+      
+      if (selectedDates.length === 1) {
+        if(dueDateInput) dueDateInput.value = selectedDates[0];
+      } else {
         if(dueDateInput) dueDateInput.value = "";
+      }
+      if(selectedDates.length > 0 && taskInput) {
+        taskInput.focus();
       }
 
       renderCalendar();
@@ -249,14 +277,52 @@ document.getElementById("calNext")?.addEventListener("click", () => {
 });
 
 document.getElementById("calClearFilter")?.addEventListener("click", () => {
-  selectedDateFilter = null;
+  selectedDates = [];
+  lastSelectedDate = null;
   renderCalendar();
   renderTasks();
   updateFilterChip();
 });
 
 dateFilterClear?.addEventListener("click", () => {
-  selectedDateFilter = null;
+  selectedDates = [];
+  lastSelectedDate = null;
+  renderCalendar();
+  renderTasks();
+  updateFilterChip();
+});
+
+document.getElementById("applyRangeBtn")?.addEventListener("click", () => {
+  const fromEl = document.getElementById("rangeFromInput");
+  const toEl = document.getElementById("rangeToInput");
+  if (!fromEl || !toEl || !fromEl.value || !toEl.value) {
+    showToast("Please select both 'From' and 'To' dates.");
+    return;
+  }
+  
+  const start = new Date(fromEl.value);
+  const end = new Date(toEl.value);
+  const rangeStart = start < end ? start : end;
+  const rangeEnd = start < end ? end : start;
+  
+  let curr = new Date(rangeStart);
+  let added = 0;
+  while (curr <= rangeEnd) {
+    const y = curr.getFullYear();
+    const m = String(curr.getMonth() + 1).padStart(2, '0');
+    const d = String(curr.getDate()).padStart(2, '0');
+    const dStr = `${y}-${m}-${d}`;
+    if (!selectedDates.includes(dStr)) {
+      selectedDates.push(dStr);
+      added++;
+    }
+    curr.setDate(curr.getDate() + 1);
+  }
+  
+  fromEl.value = "";
+  toEl.value = "";
+  
+  showToast(`Selected a range of ${added} days!`);
   renderCalendar();
   renderTasks();
   updateFilterChip();
@@ -272,16 +338,19 @@ addForm.addEventListener("submit", (e) => {
 
   if (!text) return;
 
-  tasks.push({
-    text,
-    date: dateVal,
-    priority: priorityVal,
-    completed: false
-  });
+  if (selectedDates.length > 1) {
+    selectedDates.forEach(d => {
+      tasks.push({ text, date: d, priority: priorityVal, completed: false });
+    });
+  } else {
+    tasks.push({ text, date: dateVal, priority: priorityVal, completed: false });
+  }
 
   taskInput.value = "";
   if(dueDateInput) dueDateInput.value = "";
   if(priorityInput) priorityInput.value = "none";
+  selectedDates = [];
+  lastSelectedDate = null;
 
   saveTasks();
   renderTasks();
